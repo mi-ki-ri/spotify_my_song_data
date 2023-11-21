@@ -1,0 +1,4 @@
+export.sh
+venv
+dist
+.cache
