@@ -43,21 +43,27 @@ with open("./dist/spotify_futures.tsv", "w", encoding="utf-8") as f:
 pllist_id = "7wPi7r7riR79uqk490n2ZG"
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
-results = spotify.playlist(pllist_id, fields="tracks,next")
+results = spotify.playlist_tracks(pllist_id, limit=100)
 # print(results["tracks"]["items"][0]["track"]["name"])
-songs = results["tracks"]["items"]
-print(results["tracks"]["next"])
-if results["tracks"]["next"] is not None:
-    results = spotify.next(results["tracks"])
+songs = results["items"]
+print(results["next"])
+i = 100
+while results["next"] is not None:
+    results = spotify.playlist_tracks(pllist_id, limit=100, offset=i)
     songs.extend(results["items"])
+    i += 100
 # results = spotify.next(results["tracks"])
 # songs.extend(results["items"])
 #     results = spotify.next(results)
 #     songs.extend(results["items"])
 
-for song in songs:
-    print(song["track"]["name"])
+# print(songs)
+
+for i, song in enumerate(songs):
+    print(i, len(songs), song["track"]["name"])
     audio_features = spotify.audio_features(song["track"]["id"])
+
+    # popularity = song["track"]["popularity"]
 
     for track in audio_features:
         track_feature = {
